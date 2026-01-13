@@ -11,8 +11,8 @@ As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the app
 | Login new user<br/>(t@jwt.com, pw: test)            |    `login.tsx`                |       `[PUT] /api/auth`            |      `INSERT INTO auth (token, userId) VALUES (?, ?) ON DUPLICATE KEY UPDATE token=token`        |
 | Order pizza                                         |     `order.tsx`               |      `[PUT] /api/order`             |    `INSERT INTO dinerOrder (dinerId, franchiseId, storeId, date) VALUES (?, ?, ?, now())` <br/> `INSERT INTO orderItem (orderId, menuId, description, price) VALUES (?, ?, ?, ?)`          |
 | Verify pizza                                        |    `delivery.tsx`                |      `[POST] /api/order/verify`             |     `none`         |
-| View profile page                                   |       `app.tsx`             |      `none`             |     `none`         |
-| View franchise<br/>(as diner)                       |                    |                   |              |
+| View profile page                                   |       `dinerDashboard.tsx`             |      `none`             |     `none`         |
+| View franchise<br/>(as diner)                       |     `franchiseDashboard.tsx`               |    `[GET] /api/franchise`               |      `SELECT u.id, u.name, u.email FROM userRole AS ur JOIN user AS u ON u.id=ur.userId WHERE ur.objectId=? AND ur.role='franchisee'` <br\> `SELECT s.id, s.name, COALESCE(SUM(oi.price), 0) AS totalRevenue FROM dinerOrder AS do JOIN orderItem AS oi ON do.id=oi.orderId RIGHT JOIN store AS s ON s.id=do.storeId WHERE s.franchiseId=? GROUP BY s.id`        |
 | Logout                                              |                    |                   |              |
 | View About page                                     |                    |                   |              |
 | View History page                                   |                    |                   |              |
