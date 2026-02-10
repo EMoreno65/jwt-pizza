@@ -1,4 +1,6 @@
 import { test, expect } from 'playwright-test-coverage';
+import { Role, User } from '../src/service/pizzaService';
+import { Page } from '@playwright/test';
 
 test('home page', async ({ page }) => {
   await page.goto('/');
@@ -6,9 +8,9 @@ test('home page', async ({ page }) => {
   expect(await page.title()).toBe('JWT Pizza');
 });
 
-async function basicInit(page) {
-  let loggedInUser;
-  const validUsers = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
+async function basicInit(page: Page) {
+  let loggedInUser: User | undefined;
+  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
 
   // Authorize login for the given user
   await page.route('*/**/api/auth', async (route) => {
