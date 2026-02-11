@@ -29,6 +29,7 @@ async function basicInit(page: Page) {
     await route.fulfill({ json: loginRes });
   });
 
+
   // Return the currently logged in user
   await page.route('*/**/api/user/me', async (route) => {
     expect(route.request().method()).toBe('GET');
@@ -134,4 +135,22 @@ test('purchase with login', async ({ page }) => {
   await expect(page.getByText('0.008')).toBeVisible();
 });
 
-// Need to test something
+test('mystery playwright test', async ({ page }) => {
+  await basicInit(page);
+  await page.goto('http://localhost:5173/');
+  await page.getByRole('contentinfo').getByRole('link', { name: 'Franchise' }).click();
+  await page.getByRole('link', { name: 'About' }).click();
+  await page.getByRole('link', { name: 'History' }).click();
+  await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('hi@jwt.com');
+  await page.getByRole('textbox', { name: 'Full name' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('hi');
+  await page.getByRole('textbox', { name: 'Email address' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Password' }).fill('hi');
+  await page.getByRole('button', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('hi@email.com');
+  await page.getByRole('button', { name: 'Register' }).click();
+  await page.getByRole('link', { name: 'h', exact: true }).click();
+});
