@@ -147,8 +147,8 @@ async function basicInit(page: Page) {
           name: 'LotaPizza',
           stores: [
             { id: 4, name: 'Lehi' },
-            { id: 5, name: 'Springville' },
-            { id: 6, name: 'American Fork' },
+            // { id: 5, name: 'Springville' },
+            // { id: 6, name: 'American Fork' },
           ],
         },
         { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
@@ -160,16 +160,16 @@ async function basicInit(page: Page) {
   });
 
   // let createdFranchise: any;
-  // await page.route('*/**/api/franchise', async (route) => {
-  //   const createdFranchise = route.request().postDataJSON();
-  //   const newFranchise = {
-  //     id: 5,
-  //     name: createdFranchise.name,
-  //     stores: [{ id: 8, name: createdFranchise.storeName }],
-  //   };
-  //   expect(route.request().method()).toBe('POST');
-  //   await route.fulfill({ json: newFranchise });
-  // });
+  await page.route('*/**/api/franchise', async (route) => {
+    const createdFranchise = route.request().postDataJSON();
+    const newFranchise = {
+      id: 5,
+      name: createdFranchise.name,
+      stores: [{ id: 8, name: createdFranchise.storeName }],
+    };
+    expect(route.request().method()).toBe('POST');
+    await route.fulfill({ json: newFranchise });
+  });
 
   // Order a pizza.
   await page.route('*/**/api/order', async (route) => {
@@ -281,8 +281,6 @@ test('admin can login', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
   await page.getByRole('button', { name: 'Login' }).click();
 
-  await page.screenshot({ path: 'debug.png', fullPage: true });
-
 });
 
 test('admin can login and create franchise', async ({ page }) => {
@@ -295,12 +293,14 @@ test('admin can login and create franchise', async ({ page }) => {
   await page.getByRole('link', { name: 'Admin' }).click();
   await page.getByRole('button', { name: 'Add Franchise' }).click();
   await page.getByRole('textbox', { name: 'franchise name' }).fill('New Franchise');
-  await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('tf@jwt.com');
+  await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('a@jwt.com');
   await page.getByRole('button', { name: 'Create' }).click();
 
-  // await page.screenshot({ path: 'debug.png', fullPage: true });
+  await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
 
-  expect(page.locator('tbody')).toContainText('New Franchise');
+  await expect(page.getByText('New Franchise')).toBeVisible();
+
+  
 
 });
 
