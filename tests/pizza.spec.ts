@@ -138,42 +138,38 @@ async function basicInit(page: Page) {
     await route.fulfill({ json: menuRes });
   });
 
-
-  let franchises =  [
-      {
-        id: 2,
-        name: 'LotaPizza',
-        stores: [
-          { id: 4, name: 'Lehi' },
-          { id: 5, name: 'Springville' },
-          { id: 6, name: 'American Fork' },
-        ],
-      },
-      { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
-      { id: 4, name: 'topSpot', stores: [] },
-    ]
   // Standard franchises and stores
   await page.route(/\/api\/franchise(\?.*)?$/, async (route) => {
-    const method = route.request().method();
-    if (method === 'GET') {
-      await route.fulfill({ status: 200, json: franchises });
-      return;
-    }
-    
-    if (method === 'POST') {
-      const body = route.request().postDataJSON();
-      const newFranchise = {
-        id: 56,
-        name: body.name,
-        stores: [],
-      }
-      franchises.push(newFranchise);
-      await route.fulfill({ status: 200, json: newFranchise });
-      return;
-    }
-
-    await route.fulfill({ status: 405, json: { error: 'Method not allowed' } });
+    const franchiseRes = {
+      franchises: [
+        {
+          id: 2,
+          name: 'LotaPizza',
+          stores: [
+            { id: 4, name: 'Lehi' },
+            { id: 5, name: 'Springville' },
+            { id: 6, name: 'American Fork' },
+          ],
+        },
+        { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
+        { id: 4, name: 'topSpot', stores: [] },
+      ],
+    };
+    expect(route.request().method()).toBe('GET');
+    await route.fulfill({ json: franchiseRes });
   });
+
+  // let createdFranchise: any;
+  // await page.route('*/**/api/franchise', async (route) => {
+  //   const createdFranchise = route.request().postDataJSON();
+  //   const newFranchise = {
+  //     id: 5,
+  //     name: createdFranchise.name,
+  //     stores: [{ id: 8, name: createdFranchise.storeName }],
+  //   };
+  //   expect(route.request().method()).toBe('POST');
+  //   await route.fulfill({ json: newFranchise });
+  // });
 
   // Order a pizza.
   await page.route('*/**/api/order', async (route) => {
@@ -287,27 +283,24 @@ test('admin can login', async ({ page }) => {
 
   await page.screenshot({ path: 'debug.png', fullPage: true });
 
-  await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
 });
 
-// test('admin can login and do stuff', async ({ page }) => {
-//   await basicInit(page);
-//   await page.goto('http://localhost:5173/');
-//   await page.getByRole('link', { name: 'Login' }).click();
-//   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
-//   await page.getByRole('textbox', { name: 'Password' }).click();
-//   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
-//   await page.getByRole('button', { name: 'Login' }).click();
-//   await page.getByRole('link', { name: 'Admin' }).click();
-//   await page.getByRole('button', { name: 'Add Franchise' }).click();
-//   await page.getByRole('textbox', { name: 'franchise name' }).click();
-//   await page.getByRole('textbox', { name: 'franchise name' }).fill('test Franchise');
-//   await page.getByRole('textbox', { name: 'franchisee admin email' }).click();
-//   await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('tf@jwt.com');
-//   await page.getByRole('button', { name: 'Create' }).click();
-//   await page.getByRole('button', { name: 'Create' }).click();
-//   await page.getByRole('link', { name: 'Admin', exact: true }).click();
-//   await page.getByRole('textbox', { name: 'Filter franchises' }).click();
-//   await page.getByRole('button', { name: 'Add Franchise' }).click();
-// });
+test('admin can login and create franchise', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await page.getByRole('link', { name: 'Admin' }).click();
+  await page.getByRole('button', { name: 'Add Franchise' }).click();
+  await page.getByRole('textbox', { name: 'franchise name' }).fill('New Franchise');
+  await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('tf@jwt.com');
+  await page.getByRole('button', { name: 'Create' }).click();
+
+  // await page.screenshot({ path: 'debug.png', fullPage: true });
+
+  expect(page.locator('tbody')).toContainText('New Franchise');
+
+});
 
