@@ -138,25 +138,41 @@ async function basicInit(page: Page) {
     await route.fulfill({ json: menuRes });
   });
 
+
+  let franchises =  [
+      {
+        id: 2,
+        name: 'LotaPizza',
+        stores: [
+          { id: 4, name: 'Lehi' },
+          { id: 5, name: 'Springville' },
+          { id: 6, name: 'American Fork' },
+        ],
+      },
+      { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
+      { id: 4, name: 'topSpot', stores: [] },
+    ]
   // Standard franchises and stores
   await page.route(/\/api\/franchise(\?.*)?$/, async (route) => {
-    const franchiseRes = {
-      franchises: [
-        {
-          id: 2,
-          name: 'LotaPizza',
-          stores: [
-            { id: 4, name: 'Lehi' },
-            { id: 5, name: 'Springville' },
-            { id: 6, name: 'American Fork' },
-          ],
-        },
-        { id: 3, name: 'PizzaCorp', stores: [{ id: 7, name: 'Spanish Fork' }] },
-        { id: 4, name: 'topSpot', stores: [] },
-      ],
-    };
-    expect(route.request().method()).toBe('GET');
-    await route.fulfill({ json: franchiseRes });
+    const method = route.request().method();
+    if (method === 'GET') {
+      await route.fulfill({ status: 200, json: franchises });
+      return;
+    }
+    
+    if (method === 'POST') {
+      const body = route.request().postDataJSON();
+      const newFranchise = {
+        id: 56,
+        name: body.name,
+        stores: [],
+      }
+      franchises.push(newFranchise);
+      await route.fulfill({ status: 200, json: newFranchise });
+      return;
+    }
+
+    await route.fulfill({ status: 405, json: { error: 'Method not allowed' } });
   });
 
   // Order a pizza.
