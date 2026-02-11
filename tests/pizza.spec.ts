@@ -13,7 +13,7 @@ async function basicInit(page: Page) {
   let registeredUser: User | undefined;
   const validNewUsers: Record<string, User> = { 'q@jwt.com': { id: '5', name: 'Generic Name', email: 'q@jwt.com', password: 'q', roles: [{ role: Role.Diner }] } };
   let loggedInUser: User | undefined;
-  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
+  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] }, 'admin@jwt.com': { id: '1', name: 'Admin Name', email: 'admin@jwt.com', password: 'admin', roles: [{ role: Role.Admin }] } };
 
   await page.route('*/**/api/auth', async (route) => {
     const method = route.request().method();
@@ -29,6 +29,7 @@ async function basicInit(page: Page) {
       };
 
       validNewUsers[body.email] = newUser;
+      validUsers
       registeredUser = newUser;
       loggedInUser = newUser; 
 
@@ -171,7 +172,6 @@ test('register', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).fill('q');
   await page.getByRole('button', { name: 'Register' }).click();
 
-  await page.screenshot({ path: 'debug.png', fullPage: true });
 
   await expect(page.getByRole('link', { name: 'GN' })).toBeVisible();
 });
@@ -250,5 +250,18 @@ test('log out', async ({ page }) => {
   await page.getByRole('link', { name: 'Logout' }).click();
 
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
+});
+
+test('admin can add store', async ({ page }) => {
+  await basicInit(page);
+
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await page.screenshot({ path: 'debug.png', fullPage: true });
+
+  await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
 });
 
