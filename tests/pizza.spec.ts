@@ -323,7 +323,20 @@ test('admin can login and create franchise', async ({ page }) => {
   await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
 
   await expect(page.getByText('Added Franchise')).toBeVisible();
-  
-
 });
+
+test('admin can login and view franchises', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'Admin' }).click();
+
+  await expect(page.getByText('LotaPizza')).toBeVisible();
+  await expect(page.getByText('PizzaCorp')).toBeVisible();
+  await expect(page.getByText('topSpot')).toBeVisible();
+});
+
+
 
