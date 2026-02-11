@@ -135,22 +135,15 @@ test('purchase with login', async ({ page }) => {
   await expect(page.getByText('0.008')).toBeVisible();
 });
 
-test('mystery playwright test', async ({ page }) => {
+test('register shows error for invalid email', async ({ page }) => {
   await basicInit(page);
-  await page.goto('http://localhost:5173/');
-  await page.getByRole('contentinfo').getByRole('link', { name: 'Franchise' }).click();
-  await page.getByRole('link', { name: 'About' }).click();
-  await page.getByRole('link', { name: 'History' }).click();
-  await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click();
+
   await page.getByRole('link', { name: 'Register' }).click();
-  await page.getByRole('textbox', { name: 'Full name' }).click();
-  await page.getByRole('textbox', { name: 'Full name' }).fill('hi@jwt.com');
-  await page.getByRole('textbox', { name: 'Full name' }).press('Tab');
-  await page.getByRole('textbox', { name: 'Email address' }).fill('hi');
-  await page.getByRole('textbox', { name: 'Email address' }).press('Tab');
+  await page.getByRole('textbox', { name: 'Full Name' }).fill('Generic Name');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('invalid-email');
   await page.getByRole('textbox', { name: 'Password' }).fill('hi');
   await page.getByRole('button', { name: 'Register' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('hi@email.com');
-  await page.getByRole('button', { name: 'Register' }).click();
-  await page.getByRole('link', { name: 'h', exact: true }).click();
+
+  await expect(page.getByText('Please include an @ in the email address.')).toBeVisible();
 });
+
