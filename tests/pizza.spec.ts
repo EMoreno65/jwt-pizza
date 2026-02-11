@@ -144,21 +144,43 @@ async function basicInit(page: Page) {
   { id: 4, name: 'topSpot', stores: [] },
 ];
 
-  await page.route(/\/api\/franchise(\?.*)?$/, async (route) => {
-    expect(route.request().method()).toBe('GET');
-    await route.fulfill({ json: { franchises: mockFranchises } });
+  await page.route(/\/api\/franchise(\/\d+)?(\?.*)?$/, async (route) => {
+    if (route.request().method() === 'GET') {
+      await route.fulfill({ json: { franchises: mockFranchises } })
+    }
+    if (route.request().method() === 'DELETE') {
+      const franchiseId = route.request().url().split('/').pop();
+      const index = mockFranchises.findIndex(f => f.id.toString() === franchiseId);
+      if (index !== -1) {
+        mockFranchises.splice(index, 1); 
+        await route.fulfill({ status: 200, json: { message: 'Franchise deleted' } });
+      } else {
+        await route.fulfill({ status: 404, json: { error: 'Franchise not found' } });
+      }
+    }
   });
 
   await page.route('*/**/api/franchise', async (route) => {
     const newFranchise = {
-      id: mockFranchises.length + 2, // simple incremental ID
+      id: mockFranchises.length + 2, 
       name: 'Added Franchise',
       stores: [{ id: 8, name: 'Main Store' }],
     };
-    mockFranchises.push(newFranchise); // add to the in-memory list
+    mockFranchises.push(newFranchise); 
     expect(route.request().method()).toBe('POST');
     await route.fulfill({ json: newFranchise });
   });
+
+  // await page.route('*/**/api/franchise/:franchiseId', async (route) => {
+  //   const franchiseId = route.request().url().split('/').pop();
+  //   const index = mockFranchises.findIndex(f => f.id.toString() === franchiseId);
+  //   if (index !== -1) {
+  //     mockFranchises.splice(index, 1); 
+  //     await route.fulfill({ status: 200, json: { message: 'Franchise closed' } });
+  //   } else {
+  //     await route.fulfill({ status: 404, json: { error: 'Franchise not found' } });
+  //   }
+  // });
 
   // Standard franchises and stores
   // await page.route(/\/api\/franchise(\?.*)?$/, async (route) => {
@@ -338,5 +360,22 @@ test('admin can login and view franchises', async ({ page }) => {
   await expect(page.getByText('topSpot')).toBeVisible();
 });
 
+test('admin can delete franchise', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'Admin' }).click();
 
+  await expect(page.getByText('LotaPizza')).toBeVisible();
+  await expect(page.getByText('PizzaCorp')).toBeVisible();
+  await expect(page.getByText('topSpot')).toBeVisible();
 
+  await page.getByRole('button', { name: 'Close', exact: true }).first().click();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+
+  await expect(page.getByText('LotaPizza')).not.toBeVisible();
+  await expect(page.getByText('PizzaCorp')).toBeVisible();
+  await expect(page.getByText('topSpot')).toBeVisible();
+});
