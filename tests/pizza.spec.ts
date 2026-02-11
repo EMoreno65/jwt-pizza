@@ -13,7 +13,7 @@ async function basicInit(page: Page) {
   let registeredUser: User | undefined;
   const validNewUsers: Record<string, User> = { 'q@jwt.com': { id: '5', name: 'Generic Name', email: 'q@jwt.com', password: 'q', roles: [{ role: Role.Diner }] } };
   let loggedInUser: User | undefined;
-  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] }, 'admin@jwt.com': { id: '1', name: 'Admin Name', email: 'admin@jwt.com', password: 'admin', roles: [{ role: Role.Admin }] } };
+  const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] }, 'a@jwt.com': { id: '1', name: 'Admin Name', email: 'a@jwt.com', password: 'admin', roles: [{ role: Role.Admin }] } };
 
   await page.route('*/**/api/auth', async (route) => {
     const method = route.request().method();
@@ -29,9 +29,9 @@ async function basicInit(page: Page) {
       };
 
       validNewUsers[body.email] = newUser;
-      validUsers
+      validUsers[body.email] = newUser;
       registeredUser = newUser;
-      loggedInUser = newUser; 
+      loggedInUser = newUser;
 
       await route.fulfill({
         status: 200,
@@ -42,8 +42,13 @@ async function basicInit(page: Page) {
 
     if (method === 'PUT') {
       const user = validUsers[body.email];
+      console.log('Login attempt for:', body.email);
+      console.log('User found:', user);
       if (!user || user.password !== body.password) {
-        await route.fulfill({ status: 401 });
+        await route.fulfill({
+          status: 401,
+          json: { error: 'Unauthorized' },
+        });
         return;
       }
 
@@ -55,7 +60,11 @@ async function basicInit(page: Page) {
       });
       return;
     }
-    await route.fulfill({ status: 405 });
+
+    await route.fulfill({
+      status: 405,
+      json: { error: 'Method not allowed' },
+    });
   });
 
   // await page.route('*/**/api/auth', async (route) => {
@@ -252,7 +261,7 @@ test('log out', async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
 });
 
-test('admin can add store', async ({ page }) => {
+test('admin can login', async ({ page }) => {
   await basicInit(page);
 
   await page.getByRole('link', { name: 'Login' }).click();
@@ -264,4 +273,25 @@ test('admin can add store', async ({ page }) => {
 
   await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
 });
+
+// test('admin can login and do stuff', async ({ page }) => {
+//   await basicInit(page);
+//   await page.goto('http://localhost:5173/');
+//   await page.getByRole('link', { name: 'Login' }).click();
+//   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+//   await page.getByRole('textbox', { name: 'Password' }).click();
+//   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+//   await page.getByRole('button', { name: 'Login' }).click();
+//   await page.getByRole('link', { name: 'Admin' }).click();
+//   await page.getByRole('button', { name: 'Add Franchise' }).click();
+//   await page.getByRole('textbox', { name: 'franchise name' }).click();
+//   await page.getByRole('textbox', { name: 'franchise name' }).fill('test Franchise');
+//   await page.getByRole('textbox', { name: 'franchisee admin email' }).click();
+//   await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('tf@jwt.com');
+//   await page.getByRole('button', { name: 'Create' }).click();
+//   await page.getByRole('button', { name: 'Create' }).click();
+//   await page.getByRole('link', { name: 'Admin', exact: true }).click();
+//   await page.getByRole('textbox', { name: 'Filter franchises' }).click();
+//   await page.getByRole('button', { name: 'Add Franchise' }).click();
+// });
 
