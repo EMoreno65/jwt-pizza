@@ -285,21 +285,44 @@ test('admin can login', async ({ page }) => {
 
 test('admin can login and create franchise', async ({ page }) => {
   await basicInit(page);
+  // await page.getByRole('link', { name: 'Login' }).click();
+  // await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  // await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  // await page.getByRole('button', { name: 'Login' }).click();
+
+  // await page.getByRole('link', { name: 'Admin' }).click();
+  // await page.getByRole('button', { name: 'Add Franchise' }).click();
+  // await page.getByRole('textbox', { name: 'franchise name' }).fill('New Franchise');
+  // await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('a@jwt.com');
+  // await page.getByRole('button', { name: 'Create' }).click();
+  // await page.getByRole('textbox', { name: 'Filter franchises' }).fill('New Franchise');
+  // await page.getByRole('button', { name: 'Submit' }).click();
+
+  // await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
+
+  // await expect(page.getByText('New Franchise')).toBeVisible();
+
+
+  await page.goto('http://localhost:5173/');
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).press('Tab');
   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
   await page.getByRole('button', { name: 'Login' }).click();
-
   await page.getByRole('link', { name: 'Admin' }).click();
   await page.getByRole('button', { name: 'Add Franchise' }).click();
-  await page.getByRole('textbox', { name: 'franchise name' }).fill('New Franchise');
+  await page.getByRole('textbox', { name: 'franchise name' }).click();
+  await page.getByRole('textbox', { name: 'franchise name' }).fill('this one');
+  await page.getByRole('textbox', { name: 'franchisee admin email' }).click();
   await page.getByRole('textbox', { name: 'franchisee admin email' }).fill('a@jwt.com');
   await page.getByRole('button', { name: 'Create' }).click();
+  await page.getByRole('textbox', { name: 'Filter franchises' }).click();
+  await page.getByRole('textbox', { name: 'Filter franchises' }).fill('this one');
+  await page.getByRole('button', { name: 'Submit' }).click();
 
   await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
 
-  await expect(page.getByText('New Franchise')).toBeVisible();
-
+  await expect(page.getByText('this one')).toBeVisible();
   
 
 });
