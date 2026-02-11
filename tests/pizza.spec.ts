@@ -9,31 +9,101 @@ test('home page', async ({ page }) => {
 });
 
 async function basicInit(page: Page) {
+
+  let registeredUser: User | undefined;
+  const validNewUsers: Record<string, User> = { 'q@jwt.com': { id: '5', name: 'Generic Name', email: 'q@jwt.com', password: 'q', roles: [{ role: Role.Diner }] } };
   let loggedInUser: User | undefined;
   const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
 
-  // Authorize login for the given user
   await page.route('*/**/api/auth', async (route) => {
-    const loginReq = route.request().postDataJSON();
-    const user = validUsers[loginReq.email];
-    if (!user || user.password !== loginReq.password) {
-      await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
+    const method = route.request().method();
+    const body = route.request().postDataJSON();
+
+    if (method === 'POST') {
+      const newUser: User = {
+        id: '5',
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        roles: [{ role: Role.Diner }],
+      };
+
+      validNewUsers[body.email] = newUser;
+      registeredUser = newUser;
+      loggedInUser = newUser; 
+
+      await route.fulfill({
+        status: 200,
+        json: { user: newUser, token: 'abcdef' },
+      });
       return;
     }
-    loggedInUser = validUsers[loginReq.email];
-    const loginRes = {
-      user: loggedInUser,
-      token: 'abcdef',
-    };
-    expect(route.request().method()).toBe('PUT');
-    await route.fulfill({ json: loginRes });
+
+    if (method === 'PUT') {
+      const user = validUsers[body.email];
+      if (!user || user.password !== body.password) {
+        await route.fulfill({ status: 401 });
+        return;
+      }
+
+      loggedInUser = user;
+
+      await route.fulfill({
+        status: 200,
+        json: { user, token: 'abcdef' },
+      });
+      return;
+    }
+    await route.fulfill({ status: 405 });
   });
+
+  // await page.route('*/**/api/auth', async (route) => {
+  //   const registerReq = route.request().postDataJSON();
+  //   const user = validNewUsers[registerReq.email];
+  //   if (!user || user.password !== registerReq.password) {
+  //     await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
+  //     return;
+  //   }
+  //   registeredUser = user;
+  //   const registerRes = {
+  //     user: registeredUser,
+  //     token: 'abcdef',
+  //   };
+  //   expect(route.request().method()).toBe('POST');
+  //   await route.fulfill({ json: registerRes });
+  // });
+
+  // let loggedInUser: User | undefined;
+  // const validUsers: Record<string, User> = { 'd@jwt.com': { id: '3', name: 'Kai Chen', email: 'd@jwt.com', password: 'a', roles: [{ role: Role.Diner }] } };
+
+  // // Authorize login for the given user
+  // await page.route('*/**/api/auth', async (route) => {
+  //   const loginReq = route.request().postDataJSON();
+  //   const user = validUsers[loginReq.email];
+  //   if (!user || user.password !== loginReq.password) {
+  //     await route.fulfill({ status: 401, json: { error: 'Unauthorized' } });
+  //     return;
+  //   }
+  //   loggedInUser = validUsers[loginReq.email];
+  //   const loginRes = {
+  //     user: loggedInUser,
+  //     token: 'abcdef',
+  //   };
+  //   expect(route.request().method()).toBe('PUT');
+  //   await route.fulfill({ json: loginRes });
+  // });
 
 
   // Return the currently logged in user
   await page.route('*/**/api/user/me', async (route) => {
     expect(route.request().method()).toBe('GET');
     await route.fulfill({ json: loggedInUser });
+  });
+
+  // Return the currently registered user
+  await page.route('*/**/api/user/registered', async (route) => {
+    expect(route.request().method()).toBe('GET');
+    await route.fulfill({ json: registeredUser });
   });
 
   // A standard menu
@@ -92,6 +162,19 @@ async function basicInit(page: Page) {
 
   await page.goto('/');
 }
+
+test('register', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full Name' }).fill('Generic Name');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('q@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('q');
+  await page.getByRole('button', { name: 'Register' }).click();
+
+  await page.screenshot({ path: 'debug.png', fullPage: true });
+
+  await expect(page.getByRole('link', { name: 'GN' })).toBeVisible();
+});
 
 test('login', async ({ page }) => {
   await basicInit(page);
