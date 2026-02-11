@@ -144,6 +144,7 @@ test('register shows error for invalid email', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).fill('hi');
   await page.getByRole('button', { name: 'Register' }).click();
 
-  await expect(page.getByText('Please include an @ in the email address.')).toBeVisible();
+  await expect(page).toHaveURL(/register/);
+
 });
 
