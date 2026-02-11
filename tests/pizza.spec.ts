@@ -231,3 +231,13 @@ test('register shows error for invalid email', async ({ page }) => {
 
 });
 
+test('login shows error for invalid credentials', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('invalid-email');
+  await page.getByRole('textbox', { name: 'Password' }).fill('invalid-password');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await expect(page).toHaveURL(/login/);
+});
+
