@@ -442,16 +442,15 @@ test('admin can delete franchise', async ({ page }) => {
   await expect(page.getByText('topSpot')).toBeVisible();
 });
 
-// test('login and open about page and history page', async ({ page }) => {
-//   await basicInit(page);
-//   await page.getByRole('link', { name: 'Login' }).click();
-//   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
-//   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
-//   await page.getByRole('button', { name: 'Login' }).click();
+test('view about page', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'About' }).click();
+  await expect(page.getByRole('heading', { name: 'Our employees' })).toBeVisible();
+});
 
-//   await page.getByRole('link', { name: 'About' }).click();
-//   await expect(page.getByText('Our Employees')).toBeVisible();
-
-//   await page.getByRole('link', { name: 'History' }).click();
-//   await expect(page.getByText('History')).toBeVisible();
-// });
+test('view menu', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Order' }).click();
+  await expect(page.getByText('Veggie')).toBeVisible();
+  await expect(page.getByText('Pepperoni')).toBeVisible();
+});
