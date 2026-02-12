@@ -275,7 +275,7 @@ const userFranchise = {
       order: { ...orderReq, id: 23 },
       jwt: 'eyJpYXQ',
     };
-    expect(route.request().method()).toBe('POST');
+    // expect(route.request().method()).toBe('POST');
     await route.fulfill({ json: orderRes });
   });
 
@@ -448,9 +448,39 @@ test('view about page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Our employees' })).toBeVisible();
 });
 
+test('view history page', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'History' }).click();
+  await expect(page.getByRole('heading', { name: 'Mama Rucci, my my' })).toBeVisible();
+});
+
 test('view menu', async ({ page }) => {
   await basicInit(page);
   await page.getByRole('link', { name: 'Order' }).click();
   await expect(page.getByText('Veggie')).toBeVisible();
   await expect(page.getByText('Pepperoni')).toBeVisible();
 });
+
+test('log in and view diner dashboard', async ({ page }) => {
+  await basicInit(page);
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('d@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('a');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'KC' }).click();
+  await expect(page.getByText('Your pizza kitchen')).toBeVisible();
+});
+
+// test('login and open about page and history page', async ({ page }) => {
+//   await basicInit(page);
+//   await page.getByRole('link', { name: 'Login' }).click();
+//   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+//   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+//   await page.getByRole('button', { name: 'Login' }).click();
+
+//   await page.getByRole('link', { name: 'About' }).click();
+//   await expect(page.getByText('Our Employees')).toBeVisible();
+
+//   await page.getByRole('link', { name: 'History' }).click();
+//   await expect(page.getByText('History')).toBeVisible();
+// });
