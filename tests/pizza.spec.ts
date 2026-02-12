@@ -8,6 +8,8 @@ test('home page', async ({ page }) => {
   expect(await page.title()).toBe('JWT Pizza');
 });
 
+
+
 async function basicInit(page: Page) {
 
   let registeredUser: User | undefined;
@@ -157,7 +159,14 @@ const userFranchise = {
     console.log('URL:', route.request().url());
     if (route.request().method() === 'GET') {
       console.log(route.request().url());
-      await route.fulfill({ json: { franchises: mockFranchises } })
+      // Check if this is the user franchises endpoint or the all franchises endpoint
+      if (route.request().url().includes('/api/franchise/') && !route.request().url().includes('?')) {
+       
+        await route.fulfill({ json: mockFranchises })
+      } else {
+        
+        await route.fulfill({ json: { franchises: mockFranchises, more: false } })
+      }
     }
     if (route.request().method() === 'DELETE') {
       const franchiseId = route.request().url().split('/').pop();
@@ -392,12 +401,12 @@ test('admin can login and create franchise and store', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Franchise' }).first().click();
 
-  // await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
-  // await page.getByRole('button', { name: 'Create store' }).click();
-  // await page.getByRole('textbox', { name: 'store name' }).fill('New Store');
-  // await page.getByRole('button', { name: 'Create' }).click();
+  await page.screenshot({ path: 'admin-create-franchise.png', fullPage: true });
+  await page.getByRole('button', { name: 'Create store' }).click();
+  await page.getByRole('textbox', { name: 'store name' }).fill('New Store');
+  await page.getByRole('button', { name: 'Create' }).click();
 
-  // await expect(page.getByText('New Store')).toBeVisible();
+  await expect(page.getByText('Added Store')).toBeVisible();
 });
 
 test('admin can login and view franchises', async ({ page }) => {
@@ -433,24 +442,16 @@ test('admin can delete franchise', async ({ page }) => {
   await expect(page.getByText('topSpot')).toBeVisible();
 });
 
-// test('admin creates and deletes store in franchise', async ({ page }) => {
+// test('login and open about page and history page', async ({ page }) => {
 //   await basicInit(page);
 //   await page.getByRole('link', { name: 'Login' }).click();
 //   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
 //   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
 //   await page.getByRole('button', { name: 'Login' }).click();
-//   await page.getByRole('link', { name: 'Admin' }).click();
 
-//   await expect(page.getByText('LotaPizza')).toBeVisible();
-//   await expect(page.getByText('Lehi')).toBeVisible();
-//   await expect(page.getByText('PizzaCorp')).toBeVisible();
-//   await expect(page.getByText('Spanish Fork')).toBeVisible();
-//   await expect(page.getByText('topSpot')).toBeVisible();
+//   await page.getByRole('link', { name: 'About' }).click();
+//   await expect(page.getByText('Our Employees')).toBeVisible();
 
-//   await page.getByRole('link', { name: 'Franchise' }).first().click();
-//   await page.getByRole('button', { name: 'Create store' }).click();
-//   await page.getByRole('textbox', { name: 'store name' }).fill('New Store');
-//   await page.getByRole('button', { name: 'Create' }).click();
-
-//   await expect(page.getByText('New Store')).toBeVisible();
+//   await page.getByRole('link', { name: 'History' }).click();
+//   await expect(page.getByText('History')).toBeVisible();
 // });
