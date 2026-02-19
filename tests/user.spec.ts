@@ -112,18 +112,46 @@ async function basicInit(page: Page) {
     await route.fulfill({ json: loggedInUser });
   });
 
-  // Update user
-  await page.route('*/**/api/user/*', async (route) => {
-    if (route.request().method() === 'PUT') {
-      const updateData = route.request().postDataJSON();
-      console.log('Update request data:', updateData);
-      loggedInUser = { ...loggedInUser, ...updateData };
-      console.log('Updated loggedInUser:', loggedInUser);
-      await route.fulfill({ json: { user: loggedInUser, token: 'abcdef' } });
-    } else {
-      await route.continue();
+  await page.route('**/api/user/**', async (route) => {
+    const req = route.request();
+    const method = req.method();
+
+    console.log('Intercepted:', method, req.url());
+
+    if (method === 'PUT') {
+      const updateData = req.postDataJSON();
+
+      loggedInUser = {
+        ...loggedInUser,
+        ...updateData, // must match frontend field names
+      };
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          user: loggedInUser,
+          token: 'mock-token',
+        }),
+      });
+      return;
     }
+
+    if (method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          user: loggedInUser,
+        }),
+      });
+      return;
+    }
+
+    await route.continue();
   });
+
+
 
   // Return the currently registered user
   await page.route('*/**/api/user/registered', async (route) => {
@@ -339,7 +367,7 @@ test('updateUser', async ({ page }) => {
 });
 
 test('change password', async ({ page }) => {
-  await basicInit(page);
+  // await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
@@ -379,7 +407,7 @@ test('change password', async ({ page }) => {
   await expect(page.getByRole('main')).toContainText('pizza diner');
 });
 test('list users', async ({ page }) => {
-  await basicInit(page);
+  // await basicInit(page);
   await page.goto('/');
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
@@ -400,7 +428,7 @@ test('list users', async ({ page }) => {
 });
 
 test('change email', async ({ page }) => {
-  await basicInit(page);
+  // await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
@@ -441,7 +469,7 @@ test('change email', async ({ page }) => {
 });
 
 test('name filter', async ({ page }) => {
-  await basicInit(page);
+  // await basicInit(page);
   const gen_email1 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   const gen_email2 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   const gen_name1 = `pizza diner ${Math.floor(Math.random() * 10000)}`;
