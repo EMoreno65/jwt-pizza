@@ -18,6 +18,13 @@ export default function AdminDashboard(props: Props) {
   const [showUserModal, setShowUserModal] = React.useState(false);
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
+  const [userPage, setUserPage] = React.useState(0);
+  const usersPerPage = 10;
+
+  const startIndex = userPage * usersPerPage;
+  const endIndex = startIndex + usersPerPage;
+  const paginatedUsers = userList.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(userList.length / usersPerPage);
 
   React.useEffect(() => {
     (async () => {
