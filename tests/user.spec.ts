@@ -88,10 +88,14 @@ test('list users', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).fill('admin');
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.goto('/admin-dashboard');
+  await page.getByRole('link', { name: "Admin" }).click();
+  // await page.goto('/adminDashboard');
   await page.getByRole('button', { name: 'List Users' }).click();
+  // What should I put here to show there is a table with a Name / Email / Role Column?
   await expect(page.getByRole('table')).toBeVisible();
-  await expect(page.getByRole('table')).toContainText('Email');
+  await expect(page.getByRole('columnheader', { name: 'Name' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Email' })).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Role' })).toBeVisible();
 });
 
 test('change email', async ({ page }) => {
