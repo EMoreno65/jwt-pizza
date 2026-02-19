@@ -16,6 +16,7 @@ export default function AdminDashboard(props: Props) {
   const [franchiseList, setFranchiseList] = React.useState<FranchiseList>({ franchises: [], more: false });
   const [userList, setUserList] = React.useState<User[]>([]);
   const [showUserModal, setShowUserModal] = React.useState(false);
+  const [userSearch, setUserSearch] = React.useState('');
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
   const [userPage, setUserPage] = React.useState(0);
@@ -23,8 +24,13 @@ export default function AdminDashboard(props: Props) {
 
   const startIndex = userPage * usersPerPage;
   const endIndex = startIndex + usersPerPage;
-  const paginatedUsers = userList.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(userList.length / usersPerPage);
+  const filteredUsers = userList.filter((u) => {
+    if (!userSearch) return true;
+    const s = userSearch.toLowerCase();
+    return (u.name || '').toLowerCase().includes(s) || (u.email || '').toLowerCase().includes(s);
+  });
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   React.useEffect(() => {
     (async () => {
@@ -56,6 +62,12 @@ export default function AdminDashboard(props: Props) {
   async function filterFranchises() {
     setFranchiseList(await pizzaService.getFranchises(franchisePage, 10, `*${filterFranchiseRef.current?.value}*`));
   }
+
+  const displayedUsers = userList.filter((u) => {
+    if (!userSearch) return true;
+    const s = userSearch.toLowerCase();
+    return (u.name || '').toLowerCase().includes(s) || (u.email || '').toLowerCase().includes(s);
+  });
 
   let response = <NotFound />;
   if (Role.isRole(props.user, Role.Admin)) {
@@ -159,7 +171,7 @@ export default function AdminDashboard(props: Props) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {userList.map((user) => (
+                    {paginatedUsers.map((user) => (
                       <tr key={user.id}>
                         <td className="px-4 py-2 text-sm text-gray-800">{user.name}</td>
                         <td className="px-4 py-2 text-sm text-gray-800">{user.email}</td>
@@ -171,12 +183,43 @@ export default function AdminDashboard(props: Props) {
               ) : (
                 <p className="text-gray-500">No users found</p>
               )}
-              <button
-                onClick={() => setShowUserModal(false)}
-                className="mt-4 px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-600"
-              >
-                Close
-              </button>
+              <div className="mt-4 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    aria-label="Name"
+                    placeholder="Name"
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    className="px-3 py-1 border rounded-md"
+                  />
+                  <span className="text-sm text-gray-600">Page {userPage + 1} of {totalPages || 1}</span>
+                </div>
+                <div>
+                  <button
+                    onClick={() => setUserPage(userPage - 1)}
+                    disabled={userPage <= 0}
+                    className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:bg-gray-200 mr-2"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setUserPage(userPage + 1)}
+                    disabled={endIndex >= filteredUsers.length}
+                    className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:bg-gray-200"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+              <div className="mt-4 text-right">
+                <button
+                  onClick={() => setShowUserModal(false)}
+                  className="px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-600"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -91,11 +91,15 @@ test('list users', async ({ page }) => {
   await page.getByRole('link', { name: "Admin" }).click();
   // await page.goto('/adminDashboard');
   await page.getByRole('button', { name: 'List Users' }).click();
-  // What should I put here to show there is a table with a Name / Email / Role Column?
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Name' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Email' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Role' })).toBeVisible();
+
+  await expect(page.getByRole('button', { name: 'Previous' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Next' })).toBeVisible();
+  await expect(page.locator('text=Page 1 of')).toBeVisible();
+  
 });
 
 test('change email', async ({ page }) => {
@@ -137,4 +141,41 @@ test('change email', async ({ page }) => {
 
   await expect(page.getByRole('main')).toContainText('pizza diner');
 });
+
+test('name filter', async ({ page }) => {
+  const gen_email1 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
+  const gen_email2 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
+  const gen_name1 = `pizza diner ${Math.floor(Math.random() * 10000)}`;
+  const gen_name2 = `pizza diner ${Math.floor(Math.random() * 10000)}`;
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill(gen_name1);
+  await page.getByRole('textbox', { name: 'Email address' }).fill(gen_email1);
+  await page.getByRole('textbox', { name: 'Password' }).fill('diner');
+  await page.getByRole('button', { name: 'Register' }).click();
+  await page.getByRole('link', { name: 'Logout' }).click();
+
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill(gen_name2);
+  await page.getByRole('textbox', { name: 'Email address' }).fill(gen_email2);
+  await page.getByRole('textbox', { name: 'Password' }).fill('diner');
+  await page.getByRole('button', { name: 'Register' }).click();
+  await page.getByRole('link', { name: 'Logout' }).click();
+
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await page.getByRole('link', { name: "Admin" }).click();
+  await page.getByRole('button', { name: 'List Users' }).click();
+  await page.getByRole('textbox', { name: 'Name' }).fill(gen_name1);
+  await expect(page.getByRole('cell', { name: gen_name1 })).toBeVisible();
+  await expect(page.getByRole('cell', { name: gen_name2 })).not.toBeVisible();
+  await page.getByRole('textbox', { name: 'Name' }).fill(gen_name2);
+  await expect(page.getByRole('cell', { name: gen_name1 })).not.toBeVisible();
+  await expect(page.getByRole('cell', { name: gen_name2 })).toBeVisible();
+});
+
+
 
