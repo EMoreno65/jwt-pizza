@@ -98,6 +98,11 @@ class HttpPizzaService implements PizzaService {
     return this.callEndpoint(`/api/franchise?page=${page}&limit=${limit}&name=${nameFilter}`);
   }
 
+  async getUserList(): Promise<User[]> {
+    console.log('Getting user list');
+    return this.callEndpoint('/api/user?page=1&limit=10&name=*');
+  }
+
   async closeFranchise(franchise: Franchise): Promise<void> {
     return this.callEndpoint(`/api/franchise/${franchise.id}`, 'DELETE');
   }

@@ -14,6 +14,8 @@ interface Props {
 export default function AdminDashboard(props: Props) {
   const navigate = useNavigate();
   const [franchiseList, setFranchiseList] = React.useState<FranchiseList>({ franchises: [], more: false });
+  const [userList, setUserList] = React.useState<User[]>([]);
+  const [showUserModal, setShowUserModal] = React.useState(false);
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
 
@@ -25,6 +27,13 @@ export default function AdminDashboard(props: Props) {
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
+  }
+
+  function listUsers() {
+    (async () => {
+      setUserList(await pizzaService.getUserList());
+      setShowUserModal(true);
+    })();
   }
 
   async function closeFranchise(franchise: Franchise) {
@@ -123,6 +132,46 @@ export default function AdminDashboard(props: Props) {
         <div>
           <Button className="w-36 text-xs sm:text-sm sm:w-64" title="Add Franchise" onPress={createFranchise} />
         </div>
+        <div>
+          <Button className="w-36 text-xs sm:text-sm sm:w-64" title="List Users" onPress={listUsers} />
+          <Button className="w-36 text-xs sm:text-sm sm:w-64 ml-2" title="List Users" onPress={listUsers} />
+        </div>
+        
+        {showUserModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowUserModal(false)}>
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto" onClick={(e) => e.stopPropagation()} role="dialog">
+              <h3 className="text-lg font-semibold mb-4">Users</h3>
+              {userList.length > 0 ? (
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {userList.map((user) => (
+                      <tr key={user.id}>
+                        <td className="px-4 py-2 text-sm text-gray-800">{user.name}</td>
+                        <td className="px-4 py-2 text-sm text-gray-800">{user.email}</td>
+                        <td className="px-4 py-2 text-sm text-gray-800">{user.roles?.map((r) => r.role).join(', ')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-gray-500">No users found</p>
+              )}
+              <button
+                onClick={() => setShowUserModal(false)}
+                className="mt-4 px-4 py-2 bg-orange-400 text-white rounded-lg hover:bg-orange-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </View>
     );
   }
