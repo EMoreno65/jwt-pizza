@@ -31,7 +31,9 @@ export default function AdminDashboard(props: Props) {
 
   function listUsers() {
     (async () => {
-      setUserList(await pizzaService.getUserList());
+      const users = await pizzaService.getUserList();
+      console.log('User list is ', users);
+      setUserList(users);
       setShowUserModal(true);
     })();
   }
@@ -134,7 +136,6 @@ export default function AdminDashboard(props: Props) {
         </div>
         <div>
           <Button className="w-36 text-xs sm:text-sm sm:w-64" title="List Users" onPress={listUsers} />
-          <Button className="w-36 text-xs sm:text-sm sm:w-64 ml-2" title="List Users" onPress={listUsers} />
         </div>
         
         {showUserModal && (

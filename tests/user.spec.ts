@@ -90,6 +90,8 @@ test('list users', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
   await page.goto('/admin-dashboard');
   await page.getByRole('button', { name: 'List Users' }).click();
+  await expect(page.getByRole('table')).toBeVisible();
+  await expect(page.getByRole('table')).toContainText('Email');
 });
 
 test('change email', async ({ page }) => {
