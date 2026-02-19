@@ -153,6 +153,10 @@ test('name filter', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Email address' }).fill(gen_email1);
   await page.getByRole('textbox', { name: 'Password' }).fill('diner');
   await page.getByRole('button', { name: 'Register' }).click();
+  await expect(
+    page.getByRole('link', { name: 'Logout' })
+  ).toBeVisible();
+
   await page.getByRole('link', { name: 'Logout' }).click();
 
   await page.getByRole('link', { name: 'Register' }).click();
