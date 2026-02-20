@@ -126,8 +126,22 @@ async function basicInit(page: Page) {
       });
       return;
     }
-
-    await route.continue();
+    if (method === 'DELETE') {
+      const userId = route.request().url().split('/').pop();
+      console.log('Delete request for user ID:', userId);
+      if (!loggedInUser || !loggedInUser.roles!.some(r => r.role === Role.Admin)) {
+        await route.fulfill({ status: 403, json: { error: 'Forbidden' } });
+      } else {
+        const userToDelete = Object.values(validUsers).find(u => u.id === userId);
+        if (userToDelete) {
+          delete validUsers[userToDelete.email!];
+          if (loggedInUser.email === userToDelete.email) loggedInUser = undefined;
+          await route.fulfill({ status: 200, json: { user: userToDelete } });
+        } else {
+          await route.fulfill({ status: 404, json: { error: 'User not found' } });
+        }
+      }
+    }
   });
 
   // Return a list of all users for admin dashboard
@@ -139,28 +153,7 @@ async function basicInit(page: Page) {
     await route.fulfill({ json: { users: Object.values(validUsers) } });
   });
 
-  // Delete a user (admin only)
-  await page.route(/\/api\/user\/\d+$/, async (route) => {
-    const method = route.request().method();
-    const userId = route.request().url().split('/').pop();
-    console.log('Delete request for user ID:', userId);
-    if (method === 'DELETE') {
-      if (!loggedInUser || !loggedInUser.roles!.some(r => r.role === Role.Admin)) {
-        await route.fulfill({ status: 403, json: { error: 'Forbidden' } });
-      } else {
-        const userToDelete = Object.values(validUsers).find(u => u.id === userId);
-        if (userToDelete) {
-          delete validUsers[userToDelete.email!];
-          if (loggedInUser.email === userToDelete.email) {
-            loggedInUser = undefined;
-          }
-          await route.fulfill({ status: 200, json: { user: userToDelete } });
-        } else {
-          await route.fulfill({ status: 404, json: { error: 'User not found' } });
-        }
-      }
-    }
-  });
+
 
 
 
