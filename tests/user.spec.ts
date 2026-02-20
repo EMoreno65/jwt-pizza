@@ -121,21 +121,29 @@ async function basicInit(page: Page) {
     if (method === 'PUT') {
       const updateData = req.postDataJSON();
 
-      loggedInUser = {
+      if (!loggedInUser) {
+        await route.fulfill({ status: 401 });
+        return;
+      }
+
+      const updatedUser = {
         ...loggedInUser,
-        ...updateData, // must match frontend field names
+        ...updateData,
       };
+
+      validUsers[updatedUser.email] = updatedUser;
+      loggedInUser = updatedUser;
 
       await route.fulfill({
         status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          user: loggedInUser,
+        json: {
+          user: updatedUser,
           token: 'mock-token',
-        }),
+        },
       });
       return;
     }
+
 
     if (method === 'GET') {
       await route.fulfill({
@@ -324,7 +332,7 @@ const userFranchise = {
 }
 
 test('updateUser', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
@@ -367,7 +375,7 @@ test('updateUser', async ({ page }) => {
 });
 
 test('change password', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
@@ -407,7 +415,7 @@ test('change password', async ({ page }) => {
   await expect(page.getByRole('main')).toContainText('pizza diner');
 });
 test('list users', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   await page.goto('/');
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
@@ -428,7 +436,7 @@ test('list users', async ({ page }) => {
 });
 
 test('change email', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
@@ -469,7 +477,7 @@ test('change email', async ({ page }) => {
 });
 
 test('name filter', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   const gen_email1 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   const gen_email2 = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   const gen_name1 = `pizza diner ${Math.floor(Math.random() * 10000)}`;
@@ -509,7 +517,7 @@ test('name filter', async ({ page }) => {
 });
 
 test('delete user as admin', async ({ page }) => {
-  // await basicInit(page);
+  await basicInit(page);
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
