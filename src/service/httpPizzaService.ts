@@ -99,7 +99,6 @@ class HttpPizzaService implements PizzaService {
   }
 
   async getUserList(): Promise<User[]> {
-    console.log('Getting user list');
     const response = await this.callEndpoint('/api/user?page=1&limit=10&name=*');
     return response.users || [];
   }

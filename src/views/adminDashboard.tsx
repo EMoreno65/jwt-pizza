@@ -45,7 +45,6 @@ export default function AdminDashboard(props: Props) {
   function listUsers() {
     (async () => {
       const users = await pizzaService.getUserList();
-      console.log('User list is ', users);
       setUserList(users);
       setShowUserModal(true);
     })();
@@ -185,7 +184,7 @@ export default function AdminDashboard(props: Props) {
                         <td className="px-4 py-2 text-sm text-gray-800">{user.email}</td>
                         <td className="px-4 py-2 text-sm text-gray-800">{user.roles?.map((r) => r.role).join(', ')}</td>
                         <td className="px-4 py-2 text-sm text-gray-800">
-                          <button className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" onClick={() => deleteUser(user.name!)}>X</button>
+                          <button className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" onClick={() => deleteUser(user.id!)}>X</button>
                         </td>
                       </tr>
                     ))}
