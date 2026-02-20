@@ -51,6 +51,14 @@ export default function AdminDashboard(props: Props) {
     })();
   }
 
+  function deleteUser(userId: string) {
+    (async () => {
+      console.log('Deleting user in admin dashboard, about to call service');
+      await pizzaService.deleteUser(userId);
+      setUserList(userList.filter((u) => u.id !== userId));
+    })();
+  }
+
   async function closeFranchise(franchise: Franchise) {
     navigate('/admin-dashboard/close-franchise', { state: { franchise: franchise } });
   }
@@ -176,6 +184,9 @@ export default function AdminDashboard(props: Props) {
                         <td className="px-4 py-2 text-sm text-gray-800">{user.name}</td>
                         <td className="px-4 py-2 text-sm text-gray-800">{user.email}</td>
                         <td className="px-4 py-2 text-sm text-gray-800">{user.roles?.map((r) => r.role).join(', ')}</td>
+                        <td className="px-4 py-2 text-sm text-gray-800">
+                          <button className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" onClick={() => deleteUser(user.name!)}>X</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

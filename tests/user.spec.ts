@@ -508,5 +508,37 @@ test('name filter', async ({ page }) => {
   await expect(page.getByRole('cell', { name: gen_name2 })).toBeVisible();
 });
 
+test('delete user as admin', async ({ page }) => {
+  // await basicInit(page);
+  const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Register' }).click();
+  await page.getByRole('textbox', { name: 'Full name' }).fill('pizza diner');
+  await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+  await page.getByRole('textbox', { name: 'Password' }).fill('diner');
+  await page.getByRole('button', { name: 'Register' }).click();
+
+  await page.getByRole('link', { name: 'Logout' }).click();
+
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await page.getByRole('link', { name: "Admin" }).click();
+  await page.getByRole('button', { name: 'List Users' }).click();
+
+  await page.getByRole('textbox', { name: 'Name' }).fill(email);
+
+  const userRow = page.getByRole('row', { name: new RegExp(email) });
+
+  await userRow.getByRole('button', { name: 'X' }).click();
+
+  await expect(
+    page.getByText(email)
+  ).not.toBeVisible();
+
+
+});
 
 
