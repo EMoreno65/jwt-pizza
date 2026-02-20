@@ -405,7 +405,7 @@ test('change password', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Email address' }).fill(email);
   await page.getByRole('textbox', { name: 'Password' }).fill('diner');
   await page.getByRole('button', { name: 'Login' }).click();
-  await expect(page.getByRole('main')).toContainText('unknown user');
+  await expect(page.getByRole('main')).toContainText('401');
   await page.getByRole('textbox', { name: 'Email address' }).fill(email);
   await page.getByRole('textbox', { name: 'Password' }).fill(newPassword);
   await page.getByRole('button', { name: 'Login' }).click();
