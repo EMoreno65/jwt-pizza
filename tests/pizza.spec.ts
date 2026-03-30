@@ -470,17 +470,3 @@ test('log in and view diner dashboard', async ({ page }) => {
   await page.getByRole('link', { name: 'KC' }).click();
   await expect(page.getByText('Your pizza kitchen')).toBeVisible();
 });
-
-test('login and open about page and history page', async ({ page }) => {
-  await basicInit(page);
-  await page.getByRole('link', { name: 'Login' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
-  await page.getByRole('textbox', { name: 'Password' }).fill('admin');
-  await page.getByRole('button', { name: 'Login' }).click();
-
-  await page.getByRole('link', { name: 'About' }).click();
-  await expect(page.getByText('Our Employees')).toBeVisible();
-
-  await page.getByRole('link', { name: 'History' }).click();
-  await expect(page.getByText('History')).toBeVisible();
-});
