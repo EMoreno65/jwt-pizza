@@ -56,5 +56,11 @@ The issues seen in the CVEs can be divided into weaknesses, patterns, and catego
 - CWE has a top 25 list of security vulnerabilities to be cautious of
 - They prioritize in this way so developers can identify high security bugs when a scanner is ran against the code. This is especially useful for identifying patterns of insecurity within the code
 
+### Personal Takeaways
+- I've had experiences in my own work and internships where data had to be transported or created in very specific and curated ways in order to maintain security protocol and I appreciate now that there's a clear compendium of issues that can help me make sense of these principles
+- In exploring it, I liked seeing how scanners were used to identify issues and associate them with CWE IDs, it's a very streamlined system that I believe does a lot of good for development.
+- In my own projects, I will use this feature in the future to make sense of security principles and why they're important. In my future employment doing full-time software engineering work, I will maintain these principles and show them to my team.
+- This is personally important to me because I've had moments where I stumbled across webpages that had been exploited and it puts the users of the website at real risk of cyberattacks and private data being breached. I like how this makes this process easier for not only how it helps developers but how it helps everybody.  
+
 ### Final Thoughts
 CWEs offer a list of important security vulnerabilties with clear examples and suggested fixes that developers use to identify patterns and isolate issues within their code and architecture. 
