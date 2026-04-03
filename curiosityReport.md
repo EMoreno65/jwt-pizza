@@ -27,3 +27,34 @@ I chose CWE because it's emphasis on prevention rather than fixing issues is rea
   - E.g (Medium)
 - Demonstrative Examples: Show Code Blocks that display the vulnerability
 - Detection Methods: Suggests certain methods to detect these vulnerabilities
+
+### Hierarchy of Security Issues
+The issues seen in the CVEs can be divided into weaknesses, patterns, and categories to compartmentalize each of the issues
+- Design Weaknesses
+  - Architectural decisions that create security flaws
+- Implementation Weaknesses
+  - Coding mistakes that lead to memory corruption or injection
+- Configuration Weaknesses
+  - Security issues caused through incorrect system or application configurations
+ 
+### What I learned
+- Security issues come through the form of bad architecture as well as system issues
+- SAST and DAST Security Systems use CWE IDs to tag findings
+- CWE-79 for example can identify security issues in a code block like so:
+  import sqlite3
+
+  def get_user_data(username):
+      conn = sqlite3.connect('users.db')
+      cursor = conn.cursor()
+      query = f"SELECT * FROM users WHERE username = '{username}'"
+      cursor.execute(query)
+      return cursor.fetchall()
+
+  This code leaves a real possibility of SQL Injection
+
+  Through using CWEs, the "{username}" text is changed to a "?"
+- CWE has a top 25 list of security vulnerabilities to be cautious of
+- They prioritize in this way so developers can identify high security bugs when a scanner is ran against the code. This is especially useful for identifying patterns of insecurity within the code
+
+### Final Thoughts
+CWEs offer a list of important security vulnerabilties with clear examples and suggested fixes that developers use to identify patterns and isolate issues within their code and architecture. 
