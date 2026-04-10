@@ -79,7 +79,11 @@ class HttpPizzaService implements PizzaService {
   }
 
   async order(order: Order): Promise<OrderResponse> {
-    return this.callEndpoint('/api/order', 'POST', order);
+    return this.callEndpoint('/api/order', 'POST', {
+      franchiseId: order.franchiseId,
+      storeId: order.storeId,
+      items: order.items.map((item) => ({ menuId: item.menuId })),
+    });
   }
 
   async verifyOrder(jwt: string): Promise<JWTPayload> {
