@@ -14,10 +14,10 @@
 | Date   | April 11, 2026   |
 | Target   | pizza.ethanm.click   |
 | Classification | Information Disclosure |
-| Severity | 1 |
-| Description | JWT Token is exposed in order response payload. Potential misuse of tokens if intercepted. |
-| Images | ![JWT Exposed](./JWTExposure.png) |
-| Corrections | Removed jwt from response body in the post api for creating an order. |
+| Severity | 0 |
+| Description | JWT Token is exposed in UI. Potential misuse of tokens. |
+| Images | N/A |
+| Corrections | Removed jwt from UI. |
 
 | Item | Result |
 | -------- | -------- |
