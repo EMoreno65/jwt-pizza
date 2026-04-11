@@ -18,3 +18,13 @@
 | Description | JWT Token is exposed in order response payload. Potential misuse of tokens if intercepted. |
 | Images | ![Price Change](./JWTExposure.png) |
 | Corrections | Removed jwt from response body in the post api for creating an order. |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
+| Classification | Insecure Design |
+| Severity | 1 |
+| Description | The api/order endpoint allows the same request to be submitted creating multiple distinct orders. No protections against delayed requests. |
+| Images | ![Price Change](./JWTExposure.png) |
+| Corrections | Removed jwt from response body in the post api for creating an order. |
