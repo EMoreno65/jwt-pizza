@@ -28,3 +28,13 @@
 | Description | The api/order endpoint allows the same request to be submitted creating multiple distinct orders. No protections against delayed requests. |
 | Images | ![Order Duplicate](./IAttack1.png) ![Order Duplicate](./IAttack2.png) |
 | Corrections | Added function in database.js that checks the database to see if a user has submitted a duplicate order within the last 20 seconds. In create order in orderRouter, it stops the user if this is the case. Prevents rapid order placement and overloading the system. |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
+| Classification | Injection |
+| Severity | 0 |
+| Description | Intercepted order requests and slightly modified auth tokens to test order verification. |
+| Images | ![Auth Attack]() |
+| Corrections | No needed corrections. |
