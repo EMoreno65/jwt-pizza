@@ -1,3 +1,6 @@
+**Ethan Moreno / Trent Welling**
+
+**Self Attack - Ethan Moreno**
 
 | Item | Result |
 | -------- | -------- |
