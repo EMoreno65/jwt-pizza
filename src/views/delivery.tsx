@@ -52,10 +52,7 @@ export default function Delivery() {
           <div className="col-span-4">{order.items?.reduce((a: number, c: any) => a + c.price, 0).toLocaleString()} ₿</div>
         </div>
 
-        <div
-          className={`font-thin break-all font-mono text-xs bg-slate-100 p-2 ${jwtPayload.message === 'valid' ? 'text-green-500' : 'text-red-500'}`}>
-          {jwt}
-        </div>
+        <div className="font-thin text-xs text-orange-300 mt-2">Receipt token hidden for security. Use Verify to validate authenticity.</div>
       </div>
 
       <div id="hs-jwt-modal" className="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none">
