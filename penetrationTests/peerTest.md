@@ -38,3 +38,13 @@
 | Description | Intercepted order requests and slightly modified auth tokens to test order verification. |
 | Images | ![Auth Attack](./FailedAuthAttack.png) |
 | Corrections | No needed corrections. |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
+| Classification | Insecure Design |
+| Severity | 1 |
+| Description | Intercepted order requests and changed franchise ID, returned successful responses. This means someone can redirect payments to a different franchise. |
+| Images | ![Auth Attack](./FailedAuthAttack.png) |
+| Corrections | Added a function in database that verifies that there exists data where the store is associated with the database. Errors if this isn't true. |
