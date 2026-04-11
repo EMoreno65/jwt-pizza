@@ -14,7 +14,7 @@
 | Date   | April 11, 2026   |
 | Target   | pizza.ethanm.click   |
 | Classification | Information Disclosure |
-| Severity | 0 |
+| Severity | 1 |
 | Description | JWT Token is exposed in UI. Potential misuse of tokens. |
 | Images | N/A |
 | Corrections | Removed jwt from UI. |
