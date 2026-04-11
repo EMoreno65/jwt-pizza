@@ -16,5 +16,5 @@
 | Classification | Information Disclosure |
 | Severity | 1 |
 | Description | JWT Token is exposed in order response payload. Potential misuse of tokens if intercepted. |
-| Images | ![Price Change](./HackedUser.png) |
-| Corrections | In order router, added a new function that rather than taking the request body, checks that the request body matches the menu, then sends the menu item. So there is no trust in what the client sends over.  |
+| Images | ![Price Change](./JWTExposure.png) |
+| Corrections | Removed jwt from response body in the post api for creating an order. |
