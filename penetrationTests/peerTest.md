@@ -36,5 +36,5 @@
 | Classification | Injection |
 | Severity | 0 |
 | Description | Intercepted order requests and slightly modified auth tokens to test order verification. |
-| Images | ![Auth Attack]() |
+| Images | ![Auth Attack](./FailedAuthAttack.png) |
 | Corrections | No needed corrections. |
