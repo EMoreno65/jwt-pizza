@@ -16,7 +16,7 @@
 | Classification | Information Disclosure |
 | Severity | 1 |
 | Description | JWT Token is exposed in order response payload. Potential misuse of tokens if intercepted. |
-| Images | ![Price Change](./JWTExposure.png) |
+| Images | ![JWT Exposed](./JWTExposure.png) |
 | Corrections | Removed jwt from response body in the post api for creating an order. |
 
 | Item | Result |
@@ -26,5 +26,5 @@
 | Classification | Insecure Design |
 | Severity | 1 |
 | Description | The api/order endpoint allows the same request to be submitted creating multiple distinct orders. No protections against delayed requests. |
-| Images | ![Price Change](./JWTExposure.png) |
-| Corrections | Removed jwt from response body in the post api for creating an order. |
+| Images | ![Order Duplicate](./IAttack1.png) ![Order Duplicate](./IAttack2.png) |
+| Corrections |  |
