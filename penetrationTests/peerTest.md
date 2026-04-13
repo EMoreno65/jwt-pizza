@@ -71,7 +71,7 @@
 | Classification | Login SQL Injection |
 | Severity | 0 |
 | Description | Attempted to login with incorrect information using an SQL injection. Did not work because the parameters going into the login request were made through inputs via '?' rather than part of a string that was part of an SQL statement. It uses parameterized queries rather than string concatenation. |
-| Images | ![Failed Login Injection](./FailedLoginInjection) |
+| Images | ![Failed Login Injection](./FailedLoginInjection.png) |
 | Corrections | N/A |
 
 | Item | Result |
@@ -91,7 +91,7 @@
 | Classification | Insecure Design |
 | Severity | 0.5 |
 | Description | When making an order request, intercepted and manually changed the role to admin to test of the role would change. The role did not change, but there was also no error thrown. Appeared to be a silent failure. It showed security in that it didn't change the user though having no notice of failure when the role is being tampered with could be a potential issue. |
-| Images | ![Admin1](./AdminPart1) ![Admin2](./AdminPart2) |
+| Images | ![Admin1](./AdminPart1.png) ![Admin2](./AdminPart2.png) |
 | Corrections | (Not sure what to write here for now.) |
 
 | Item | Result |
@@ -101,5 +101,5 @@
 | Classification | Identification and Authentication Failures |
 | Severity | 0 |
 | Description | Intercepted an order request as a user with a diner role and called an endpoint that only an admin can access. In this case I changed the endpoint to be calling the list users function to see if it'd return any data. It threw a 403 error due to that end point requiring authorization. If the endpoint did not require an authorization token, I would've been able to retrieve date, the security measure was appropriate. |
-| Images | ![Forbidden](./ForbiddenUser) |
+| Images | ![Forbidden](./ForbiddenUser.png) |
 | Corrections | N/A  |
