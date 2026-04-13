@@ -102,4 +102,4 @@
 | Severity | 0 |
 | Description | Intercepted an order request as a user with a diner role and called an endpoint that only an admin can access. In this case I changed the endpoint to be calling the list users function to see if it'd return any data. It threw a 403 error due to that end point requiring authorization. If the endpoint did not require an authorization token, I would've been able to retrieve date, the security measure was appropriate. |
 | Images | ![Forbidden](./ForbiddenUser) |
-| Corrections | N/A |
+| Corrections | N/A  |
