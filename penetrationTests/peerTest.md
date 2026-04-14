@@ -1,6 +1,8 @@
 **Ethan Moreno / Trent Welling**
 
-**Self Attack - Ethan Moreno**
+# Self Attacks (Ethan Moreno)
+
+## Attack 1
 
 | Item | Result |
 | -------- | -------- |
@@ -52,59 +54,7 @@
 | Images | ![Auth Attack](./FranchiseIDAttack.png) |
 | Corrections | Added a function in database that verifies that there exists data where the store is associated with the database. Errors if this isn't true. |
 
-**Attack on Trent's Site**
-
-| Item | Result |
-| -------- | -------- |
-| Date   | April 12, 2026   |
-| Target   | pizza.trentwelling.site   |
-| Classification | Client-Side Price Manipulation |
-| Severity | 1 |
-| Description | Price sent in Client-side request. Able to be modified via Burpsuite before payment. Pizzas ordered for free. |
-| Images | ![Price Change](./PriceChangeImage.png) |
-| Corrections | (Not sure what to write here for now.)  |
-
-| Item | Result |
-| -------- | -------- |
-| Date   | April 12, 2026   |
-| Target   | pizza.trentwelling.site   |
-| Classification | Login SQL Injection |
-| Severity | 0 |
-| Description | Attempted to login with incorrect information using an SQL injection. Did not work because the parameters going into the login request were made through inputs via '?' rather than part of a string that was part of an SQL statement. It uses parameterized queries rather than string concatenation. |
-| Images | ![Failed Login Injection](./FailedLoginInjection.png) |
-| Corrections | N/A |
-
-| Item | Result |
-| -------- | -------- |
-| Date   | April 12, 2026   |
-| Target   | pizza.trentwelling.site   |
-| Classification | Update User SQL Injection |
-| Severity | 0 |
-| Description | Attempted SQL injection to change the email of another user. This appeared more vulnerable due to using string concatenation rather than query parameterization though it did not work because the payload treated the parameters as strings. The ID used as input was found in the url/jwt rather than the query itself as well making it difficult to retrieve information my manioulating the ID. |
-| Images | N/A |
-| Corrections | N/A |
-
-| Item | Result |
-| -------- | -------- |
-| Date   | April 12, 2026   |
-| Target   | pizza.trentwelling.site   |
-| Classification | Insecure Design |
-| Severity | 0.5 |
-| Description | When making an order request, intercepted and manually changed the role to admin to test of the role would change. The role did not change, but there was also no error thrown. Appeared to be a silent failure. It showed security in that it didn't change the user though having no notice of failure when the role is being tampered with could be a potential issue. |
-| Images | ![Admin1](./AdminPart1.png) ![Admin2](./AdminPart2.png) |
-| Corrections | (Not sure what to write here for now.) |
-
-| Item | Result |
-| -------- | -------- |
-| Date   | April 12, 2026   |
-| Target   | pizza.trentwelling.site   |
-| Classification | Identification and Authentication Failures |
-| Severity | 0 |
-| Description | Intercepted an order request as a user with a diner role and called an endpoint that only an admin can access. In this case I changed the endpoint to be calling the list users function to see if it'd return any data. It threw a 403 error due to that end point requiring authorization. If the endpoint did not require an authorization token, I would've been able to retrieve date, the security measure was appropriate. |
-| Images | ![Forbidden](./ForbiddenUser.png) |
-| Corrections | N/A  |
-
-# Self Attacks
+# Self Attacks (Trent Welling)
 
 ## Attack 1
 
@@ -159,7 +109,61 @@
 | Severity       | 3                                                                                                                                                                                                                                                            |
 | Description    | A scripted set of SQL manipulation attempts against `GET /api/franchise` and `GET /api/user` showed malformed pagination payloads could trigger database syntax failures and internal error output. Union payloads did not return injected rows in this run. |
 | Images         | ![User-facing stack trace](./images/malformed-pagination-script-results.png)                                                                                                                                                                                 |
-| Corrections    | Sanitize and clamp `page`/`limit` values to integers, parameterize LIMIT/OFFSET in SQL queries, and add regression tests for malformed payloads.                                                                                                             |
+| Corrections    | Sanitize and clamp `page`/`limit` values to integers, parameterize LIMIT/OFFSET in SQL queries, and add regression tests for malformed payloads. 
+
+
+
+**Attack on Trent's Site**
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Client-Side Price Manipulation |
+| Severity | 1 |
+| Description | Price sent in Client-side request. Able to be modified via Burpsuite before payment. Pizzas ordered for free. |
+| Images | ![Price Change](./PriceChangeImage.png) |
+| Corrections | (Not sure what to write here for now.)  |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Login SQL Injection |
+| Severity | 0 |
+| Description | Attempted to login with incorrect information using an SQL injection. Did not work because the parameters going into the login request were made through inputs via '?' rather than part of a string that was part of an SQL statement. It uses parameterized queries rather than string concatenation. |
+| Images | ![Failed Login Injection](./FailedLoginInjection.png) |
+| Corrections | N/A |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Update User SQL Injection |
+| Severity | 0 |
+| Description | Attempted SQL injection to change the email of another user. This appeared more vulnerable due to using string concatenation rather than query parameterization though it did not work because the payload treated the parameters as strings. The ID used as input was found in the url/jwt rather than the query itself as well making it difficult to retrieve information my manioulating the ID. |
+| Images | N/A |
+| Corrections | N/A |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Insecure Design |
+| Severity | 0.5 |
+| Description | When making an order request, intercepted and manually changed the role to admin to test of the role would change. The role did not change, but there was also no error thrown. Appeared to be a silent failure. It showed security in that it didn't change the user though having no notice of failure when the role is being tampered with could be a potential issue. |
+| Images | ![Admin1](./AdminPart1.png) ![Admin2](./AdminPart2.png) |
+| Corrections | (Not sure what to write here for now.) |
+
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Identification and Authentication Failures |
+| Severity | 0 |
+| Description | Intercepted an order request as a user with a diner role and called an endpoint that only an admin can access. In this case I changed the endpoint to be calling the list users function to see if it'd return any data. It threw a 403 error due to that end point requiring authorization. If the endpoint did not require an authorization token, I would've been able to retrieve date, the security measure was appropriate. |
+| Images | ![Forbidden](./ForbiddenUser.png) |
+| Corrections | N/A  |                                                                                                            |
 
 # Peer Attacks
 
