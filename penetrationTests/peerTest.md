@@ -1,258 +1,213 @@
-# Security Assessment Report  
 **Ethan Moreno / Trent Welling**
 
----
+**Self Attack - Ethan Moreno**
 
-# Self Attacks (Ethan Moreno)
-
-## Attack 1: Client-Side Price Manipulation
-| Field | Details |
-|------|--------|
-| Date | April 10, 2026 |
-| Target | pizza.ethanm.click |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 10, 2026   |
+| Target   | pizza.ethanm.click   |
 | Classification | Client-Side Price Manipulation |
 | Severity | 1 |
-| Description | The price was sent in the client-side request and could be modified using Burp Suite before payment, allowing pizzas to be ordered for free. |
-| Evidence | ![Price Change](./PriceChangeImage.png) |
-| Mitigation | Implemented server-side validation to verify menu items instead of trusting client input. |
+| Description | Price sent in Client-side request. Able to be modified via Burpsuite before payment. Pizzas ordered for free. |
+| Images | ![Price Change](./PriceChangeImage.png) |
+| Corrections | In order router, added a new function that rather than taking the request body, checks that the request body matches the menu, then sends the menu item. So there is no trust in what the client sends over.  |
 
----
-
-## Attack 2: JWT Exposure
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
 | Classification | Information Disclosure |
 | Severity | 1 |
-| Description | JWT token was exposed in the UI, creating potential for token misuse. |
-| Evidence | N/A |
-| Mitigation | Removed JWT from UI responses. |
+| Description | JWT Token is exposed in UI. Potential misuse of tokens. |
+| Images | N/A |
+| Corrections | Removed jwt from UI. |
 
----
-
-## Attack 3: Duplicate Order Submission
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
 | Classification | Insecure Design |
 | Severity | 1 |
-| Description | The `/api/order` endpoint allowed duplicate requests, enabling rapid repeated order submissions. |
-| Evidence | ![Order Duplicate](./IAttack1.png), ![Order Duplicate](./IAttack2.png) |
-| Mitigation | Added a database check preventing duplicate orders within a 20-second window. |
+| Description | The api/order endpoint allows the same request to be submitted creating multiple distinct orders. No protections against delayed requests. |
+| Images | ![Order Duplicate](./IAttack1.png) ![Order Duplicate](./IAttack2.png) |
+| Corrections | Added function in database.js that checks the database to see if a user has submitted a duplicate order within the last 20 seconds. In create order in orderRouter, it stops the user if this is the case. Prevents rapid order placement and overloading the system. |
 
----
-
-## Attack 4: Auth Token Manipulation Attempt
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
 | Classification | Injection |
 | Severity | 0 |
-| Description | Attempted to manipulate authentication tokens in intercepted requests; attack failed. |
-| Evidence | ![Auth Attack](./FailedAuthAttack.png) |
-| Mitigation | No changes required. |
+| Description | Intercepted order requests and slightly modified auth tokens to test order verification. |
+| Images | ![Auth Attack](./FailedAuthAttack.png) |
+| Corrections | No needed corrections. |
 
----
-
-## Attack 5: Franchise ID Tampering
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 11, 2026   |
+| Target   | pizza.ethanm.click   |
 | Classification | Insecure Design |
 | Severity | 1 |
-| Description | Modified franchise ID in requests, allowing redirection of payments to different franchises. |
-| Evidence | ![Franchise ID Attack](./FranchiseIDAttack.png) |
-| Mitigation | Added validation to ensure franchise IDs exist and match database records. |
+| Description | Intercepted order requests and changed franchise ID, returned successful responses. This means someone can redirect payments to a different franchise. |
+| Images | ![Auth Attack](./FranchiseIDAttack.png) |
+| Corrections | Added a function in database that verifies that there exists data where the store is associated with the database. Errors if this isn't true. |
 
----
+**Attack on Trent's Site**
 
-## Attack 6: Default Credentials
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
-| Classification | Authentication Failures |
-| Severity | 4 |
-| Description | Default admin credentials were unchanged, allowing unauthorized access. |
-| Evidence | ![Default credential POST returns 200](./images/default-credentials.png) |
-| Mitigation | Updated default credentials. |
-
----
-
-## Attack 7: SQL Injection (User Update)
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
-| Classification | Injection |
-| Severity | 4 |
-| Description | SQL injection successfully overwrote all emails in the database. |
-| Evidence | ![Malicious injection](./images/malicious-injection.png), ![Unusable accounts](./images/unusable-account.png) |
-| Mitigation | Sanitized inputs and parameterized queries in `/api/user/:userId`. |
-
----
-
-## Attack 8: Stack Trace Exposure
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
-| Classification | Security Misconfiguration |
-| Severity | 3 |
-| Description | API responses exposed internal stack traces and file paths. |
-| Evidence | ![User-facing stack trace](./images/user-facing-stack-trace.png) |
-| Mitigation | Implemented sanitized error handling in production. |
-
----
-
-## Attack 9: User Enumeration
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
-| Classification | Security Misconfiguration |
-| Severity | 3 |
-| Description | `/api/user` endpoint returned all users without proper role filtering. |
-| Evidence | ![User enumeration](./images/user-enumeration-script.png) |
-| Mitigation | Added admin authorization checks (403 for unauthorized users). |
-
----
-
-## Attack 10: Pagination Injection
-| Field | Details |
-|------|--------|
-| Date | April 11, 2026 |
-| Target | pizza.ethanm.click |
-| Classification | Injection |
-| Severity | 3 |
-| Description | Malformed pagination inputs caused SQL errors and exposed internal behavior. |
-| Evidence | ![Malformed pagination](./images/malformed-pagination-script-results.png) |
-| Mitigation | Sanitized and constrained `page` and `limit`, parameterized queries. |
-
----
-
-# Attacks on Trent's Site
-
-## Attack 11: Client-Side Price Manipulation
-| Field | Details |
-|------|--------|
-| Date | April 12, 2026 |
-| Target | pizza.trentwelling.site |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
 | Classification | Client-Side Price Manipulation |
 | Severity | 1 |
-| Description | Price could be modified in intercepted requests, allowing free orders. |
-| Evidence | ![Price Change](./PriceChangeImage.png) |
-| Mitigation | Implement server-side price validation using trusted menu data. |
+| Description | Price sent in Client-side request. Able to be modified via Burpsuite before payment. Pizzas ordered for free. |
+| Images | ![Price Change](./PriceChangeImage.png) |
+| Corrections | (Not sure what to write here for now.)  |
 
----
-
-## Attack 12: Login SQL Injection Attempt
-| Field | Details |
-|------|--------|
-| Date | April 12, 2026 |
-| Target | pizza.trentwelling.site |
-| Classification | Injection |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Login SQL Injection |
 | Severity | 0 |
-| Description | SQL injection attempt failed due to use of parameterized queries. |
-| Evidence | ![Failed Login Injection](./FailedLoginInjection.png) |
-| Mitigation | No action needed. |
+| Description | Attempted to login with incorrect information using an SQL injection. Did not work because the parameters going into the login request were made through inputs via '?' rather than part of a string that was part of an SQL statement. It uses parameterized queries rather than string concatenation. |
+| Images | ![Failed Login Injection](./FailedLoginInjection.png) |
+| Corrections | N/A |
 
----
-
-## Attack 13: Update User Injection Attempt
-| Field | Details |
-|------|--------|
-| Date | April 12, 2026 |
-| Target | pizza.trentwelling.site |
-| Classification | Injection |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Update User SQL Injection |
 | Severity | 0 |
-| Description | Injection attempt unsuccessful; parameters treated safely. |
-| Evidence | N/A |
-| Mitigation | Continue using parameterized queries. |
+| Description | Attempted SQL injection to change the email of another user. This appeared more vulnerable due to using string concatenation rather than query parameterization though it did not work because the payload treated the parameters as strings. The ID used as input was found in the url/jwt rather than the query itself as well making it difficult to retrieve information my manioulating the ID. |
+| Images | N/A |
+| Corrections | N/A |
 
----
-
-## Attack 14: Role Manipulation Attempt
-| Field | Details |
-|------|--------|
-| Date | April 12, 2026 |
-| Target | pizza.trentwelling.site |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
 | Classification | Insecure Design |
 | Severity | 0.5 |
-| Description | Attempted to change role to admin; system ignored change but gave no error feedback. |
-| Evidence | ![Admin Attempt](./AdminPart1.png), ![Admin Attempt](./AdminPart2.png) |
-| Mitigation | Return explicit error responses for invalid role modification attempts. |
+| Description | When making an order request, intercepted and manually changed the role to admin to test of the role would change. The role did not change, but there was also no error thrown. Appeared to be a silent failure. It showed security in that it didn't change the user though having no notice of failure when the role is being tampered with could be a potential issue. |
+| Images | ![Admin1](./AdminPart1.png) ![Admin2](./AdminPart2.png) |
+| Corrections | (Not sure what to write here for now.) |
 
----
-
-## Attack 15: Unauthorized Endpoint Access Attempt
-| Field | Details |
-|------|--------|
-| Date | April 12, 2026 |
-| Target | pizza.trentwelling.site |
-| Classification | Authentication Failures |
+| Item | Result |
+| -------- | -------- |
+| Date   | April 12, 2026   |
+| Target   | pizza.trentwelling.site   |
+| Classification | Identification and Authentication Failures |
 | Severity | 0 |
-| Description | Attempt to access admin endpoint failed with proper 403 response. |
-| Evidence | ![Forbidden](./ForbiddenUser.png) |
-| Mitigation | No changes required. |
+| Description | Intercepted an order request as a user with a diner role and called an endpoint that only an admin can access. In this case I changed the endpoint to be calling the list users function to see if it'd return any data. It threw a 403 error due to that end point requiring authorization. If the endpoint did not require an authorization token, I would've been able to retrieve date, the security measure was appropriate. |
+| Images | ![Forbidden](./ForbiddenUser.png) |
+| Corrections | N/A  |
 
----
+# Self Attacks
+
+## Attack 1
+
+| Item           | Result                                                                   |
+| -------------- | ------------------------------------------------------------------------ |
+| Date           | Apr 11, 2026                                                             |
+| Classification | Authentication Failures                                                  |
+| Severity       | 4                                                                        |
+| Description    | Unchanged default credentials were used to access admin account          |
+| Images         | ![Default credential POST returns 200](./images/default-credentials.png) |
+| Corrections    | Update default passwords                                                 |
+
+## Attack 2
+
+| Item           | Result                                                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Date           | Apr 11, 2026                                                                                                                           |
+| Classification | Injection                                                                                                                              |
+| Severity       | 4                                                                                                                                      |
+| Description    | SQL injection successfully overwrote all emails in the database, making all accounts unusable. Could be used to execute arbitrary SQL. |
+| Images         | ![Malicious injection](./images/malicious-injection.png) ![Unusable accounts](./images/unusable-account.png)                           |
+| Corrections    | Sanitize inputs when handling the `PUT /api/user/:userId` endpoint.                                                                    |
+
+## Attack 3
+
+| Item           | Result                                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| Date           | Apr 11, 2026                                                                                             |
+| Classification | Security Misconfiguration                                                                                |
+| Severity       | 3                                                                                                        |
+| Description    | API error responses exposed internal stack traces, revealing file paths and server internals.            |
+| Images         | ![User-facing stack trace](./images/user-facing-stack-trace.png)                                         |
+| Corrections    | Update global error handler to return sanitized errors in production and hide stack traces from clients. |
+
+## Attack 4
+
+| Item           | Result                                                                                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Date           | Apr 11, 2026                                                                                                                                                     |
+| Classification | Security Misconfiguration                                                                                                                                        |
+| Severity       | 3                                                                                                                                                                |
+| Description    | The endpoint at 'GET /api/user' does not properly filter down users by role, only by authentication token. Retrieved a list of all users using basic login token |
+| Images         | ![User enumeration](./images/user-enumeration-script.png)                                                                                                        |
+| Corrections    | Add an explicit admin authorization check to the endpoint, returning 403 without proper permissions                                                              |
+
+## Attack 5
+
+| Item           | Result                                                                                                                                                                                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Date           | Apr 11, 2026                                                                                                                                                                                                                                                 |
+| Classification | Injection                                                                                                                                                                                                                                                    |
+| Severity       | 3                                                                                                                                                                                                                                                            |
+| Description    | A scripted set of SQL manipulation attempts against `GET /api/franchise` and `GET /api/user` showed malformed pagination payloads could trigger database syntax failures and internal error output. Union payloads did not return injected rows in this run. |
+| Images         | ![User-facing stack trace](./images/malformed-pagination-script-results.png)                                                                                                                                                                                 |
+| Corrections    | Sanitize and clamp `page`/`limit` values to integers, parameterize LIMIT/OFFSET in SQL queries, and add regression tests for malformed payloads.                                                                                                             |
 
 # Peer Attacks
 
-## Attack 16: Default Credentials
-| Field | Details |
-|------|--------|
-| Date | April 13, 2026 |
-| Classification | Authentication Failures |
-| Severity | 4 |
-| Description | Admin credentials were unchanged, allowing unauthorized access. |
-| Evidence | ![Logged into admin](./images/unchanged-admin.png) |
+## Attack 1
 
----
+| Item           | Result                                                     |
+| -------------- | ---------------------------------------------------------- |
+| Date           | Apr 13, 2026                                               |
+| Classification | Authentication Failures                                    |
+| Severity       | 4                                                          |
+| Description    | Admin default credentials were left unchanged              |
+| Images         | ![Logged into admin account](./images/unchanged-admin.png) |
 
-## Attack 17: Franchise Deletion Authorization Bypass
-| Field | Details |
-|------|--------|
-| Date | April 13, 2026 |
+## Attack 2
+
+| Item           | Result                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Date           | Apr 13, 2026                                                                                                                                            |
+| Classification | Security Misconfiguration                                                                                                                               |
+| Severity       | 3                                                                                                                                                       |
+| Description    | The endpoint at 'DELETE /api/franchise/:franchiseId' does not properly filter down users by role, only by authentication token. Deleted all franchises. |
+| Images         | ![Successful deletion script](./images/successful-franchise-deletion.png) ![No franchises](./images/all-franchises-deleted.png)                         |
+
+## Attack 3
+
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Date | Apr 13, 2026 |
 | Classification | Security Misconfiguration |
 | Severity | 3 |
-| Description | `DELETE /api/franchise/:franchiseId` allowed deletion without proper role validation. |
-| Evidence | ![Deletion](./images/successful-franchise-deletion.png), ![No franchises](./images/all-franchises-deleted.png) |
+| Description | The endpoint at 'GET /api/user' does not properly filter down users by role, only by authentication token. Retrieved a list of all users, including password hashes and emails, using basic login token |
+| Images | ![Users enumerated](./images/user-enumeration.png) |
 
----
+## Attack 4
 
-## Attack 18: User Data Exposure
-| Field | Details |
-|------|--------|
-| Date | April 13, 2026 |
-| Classification | Security Misconfiguration |
-| Severity | 3 |
-| Description | `/api/user` exposed all users, including sensitive data. |
-| Evidence | ![Users enumerated](./images/user-enumeration.png) |
+| Item           | Result                                                                                        |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Date           | Apr 13, 2026                                                                                  |
+| Classification | Security Misconfiguration                                                                     |
+| Severity       | 3                                                                                             |
+| Description    | API error responses exposed internal stack traces, revealing file paths and server internals. |
+| Images         | ![User-facing stack trace](./images/stack-trace-exposed.png)                                  |
 
----
+## Attack 5
 
-## Attack 19: Stack Trace Exposure
-| Field | Details |
-|------|--------|
-| Date | April 13, 2026 |
-| Classification | Security Misconfiguration |
-| Severity | 3 |
-| Description | API responses exposed internal stack traces. |
-| Evidence | ![Stack trace](./images/stack-trace-exposed.png) |
-
----
-
-## Attack 20: SQL Injection
-| Field | Details |
-|------|--------|
-| Date | April 13, 2026 |
-| Classification | Injection |
-| Severity | 5 |
-| Description | SQL injection allowed arbitrary queries and overwrote all emails. |
-| Evidence | ![SQL injection](./images/SQL-injection.png), ![Deleted admin](./images/deleted-admin.png) |
+| Item           | Result                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| Date           | Apr 13, 2026                                                                               |
+| Classification | SQL Injection                                                                              |
+| Severity       | 5                                                                                          |
+| Description    | SQL injection overwrote all emails in database. Capable of executing arbitrary SQL queries |
+| Images         | ![SQL injection](./images/SQL-injection.png) ![Missing admin](./images/deleted-admin.png)  |
